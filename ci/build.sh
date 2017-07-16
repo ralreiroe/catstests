@@ -1,0 +1,1 @@
+ci/sbt ++2.12.1 -batch -v clean test
