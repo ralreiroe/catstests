@@ -30,8 +30,9 @@ object ValidationResult {
 
   implicit val validationResultMonoid = new Monoid[ValidationResult] {          //<======= implicit required (1)
   def empty: ValidationResult = Valid
-    def combine(x: ValidationResult, y: ValidationResult): ValidationResult = (x, y) match {    //combining - ignoring second Invalid reason...
+    def combine(x: ValidationResult, y: ValidationResult): ValidationResult = (x, y) match {    //combining - accumulating reasons...
       case (Valid, Valid) => Valid
+      case (Invalid(m1 @ _), Invalid(m2 @ _)) => Invalid(m1 + "|||" + m2)
       case (i @ Invalid(_), _) => i
       case (_, i @ Invalid(_)) => i
     }
@@ -88,7 +89,15 @@ class MonoidTest extends FlatSpec with Matchers {
     val listOfFieldNames = List("abc", "def")
     validate(Add(FormCtx("abc"), FormCtx("def")), listOfFieldNames) shouldBe(Valid)
     validate(Add(FormCtx("abd"), FormCtx("def")), listOfFieldNames) shouldBe(Invalid("Form field 'abd' is not defined in form template."))
-    validate(Add(FormCtx("abd"), FormCtx("ded")), listOfFieldNames) shouldBe(Invalid("Form field 'abd' is not defined in form template."))
+    validate(Add(FormCtx("abd"), FormCtx("ded")), listOfFieldNames) shouldBe(Invalid("Form field 'abd' is not defined in form template.|||Form field 'ded' is not defined in form template."))
+
+
+    validate(
+      Add(
+        Add(FormCtx("abd"), FormCtx("ded")),
+        FormCtx("xyz")),
+      listOfFieldNames) shouldBe(Invalid("Form field 'abd' is not defined in form template.|||Form field 'ded' is not defined in form template.|||Form field 'xyz' is not defined in form template.")
+    )
   }
 
 
