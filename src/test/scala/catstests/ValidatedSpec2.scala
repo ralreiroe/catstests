@@ -35,8 +35,6 @@ class ValidatedSpec2 extends FlatSpec with Matchers with EitherValues {
   val missingYear: Option[String] => Validated[String, String] = yearStr => Validated.fromOption(yearStr, "Missing Year")
   val missingMonth: Option[String] => Validated[String, String] = yearStr => Validated.fromOption(yearStr, "Missing Month")
 
-  val toSetOfString: String => Set[String] = error => Set(error)
-
   "Validated" should "validate date" in {
 
     val dataNoYear = Map(
@@ -81,11 +79,20 @@ class ValidatedSpec2 extends FlatSpec with Matchers with EitherValues {
     val validatedYear: Validated[String, Int] = missingYear(dataYearMonth.get("year")).andThen(validNumber).andThen(validYear)
     val validatedMonth: Validated[String, Int] = missingMonth(dataYearMonth.get("month")).andThen(validNumber).andThen(validMonth)
 
+    //===turn the lefts into a single-element Set
     val res1: Validated[Set[String], Int] = validatedYear.leftMap((s: String) => Set(s))
-    val res2: Validated[Set[String], Int] = validatedMonth.leftMap((s: String) => Set(s))
+    println("res1 " + res1)
 
-    val res = res1 |@| res2
-    val res3: Validated[Set[String], (Int, Int)] = res.map((a, b) => (a,b))
+    val toSetOfString: String => Set[String] = error => Set(error)
+
+    val res2: Validated[Set[String], Int] = validatedMonth.leftMap(toSetOfString)
+    println("res2 " + res2)
+
+    //===now scream
+    val res4 = res1 |@| res2
+    println("res4 " + res4)
+    //===and get a Set of all errors on the left, and a tuple on the right
+    val res3: Validated[Set[String], (Int, Int)] = res4.map((a, b) => (a,b))
 
 //    val res = validatedYear.leftMap(_ => Set(_)) |@| validatedMonth
 
