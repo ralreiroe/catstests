@@ -69,7 +69,7 @@ class ValidatedSpec2 extends FlatSpec with Matchers with EitherValues {
 
   }
 
-  it should "validate year and month" in {
+  it should "validate year and month and show all errors" in {
 
     val dataYearMonth= Map(
       "day" -> "1",
@@ -89,8 +89,31 @@ class ValidatedSpec2 extends FlatSpec with Matchers with EitherValues {
 
 //    val res = validatedYear.leftMap(_ => Set(_)) |@| validatedMonth
 
+    println("show_all_errors " + res3)
 
-    println("cart " + res3)
+  }
+
+  it should "validate year and month and return a Valid if no errors" in {
+
+    val dataYearMonth= Map(
+      "day" -> "1",
+      "month" -> "11"
+      ,
+      "year" -> "2005"
+    )
+
+    val validatedYear: Validated[String, Int] = missingYear(dataYearMonth.get("year")).andThen(validNumber).andThen(validYear)
+    val validatedMonth: Validated[String, Int] = missingMonth(dataYearMonth.get("month")).andThen(validNumber).andThen(validMonth)
+
+    val res1: Validated[Set[String], Int] = validatedYear.leftMap((s: String) => Set(s))
+    val res2: Validated[Set[String], Int] = validatedMonth.leftMap((s: String) => Set(s))
+
+    val res = res1 |@| res2
+    val res3: Validated[Set[String], (Int, Int)] = res.map((a, b) => (a,b))
+
+//    val res = validatedYear.leftMap(_ => Set(_)) |@| validatedMonth
+
+    println("show_all_errors2 " + res3)
 
   }
 }
