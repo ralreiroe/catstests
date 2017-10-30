@@ -3,8 +3,9 @@ package catstests
 import cats.implicits._
 import cats.kernel.Semigroup
 import cc.Spec
+import org.scalatest.Matchers
 
-class SemigroupTest extends Spec {
+class SemigroupTest extends Spec with Matchers {
 
   "semigroup-combining should work" in {
 
@@ -18,9 +19,11 @@ class SemigroupTest extends Spec {
 
     val aMap = Map("foo" → Map("bar" → 5))
     val anotherMap = Map("foo" → Map("bar" → 6))
+
     val combinedMap = Semigroup[Map[String, Map[String, Int]]].combine(aMap, anotherMap)
 
-    println(combinedMap.get("foo"))
+    combinedMap.get("foo") shouldBe Some(Map("bar" -> 11))
+
 
     println(Map("foo" -> List(1, 2)) ++ Map("foo" -> List(3, 4), "bar" -> List(42)))
 
