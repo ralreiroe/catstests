@@ -54,7 +54,7 @@ class SemigroupTest extends Spec {
     |  def combine(xs: Map[K, V], ys: Map[K, V]): Map[K, V] =
     |    if (xs.size <= ys.size) {
     |      xs.foldLeft(ys) { case (my, (k, x)) =>
-    |        my.updated(k, Semigroup.maybeCombine(x, my.get(k)))
+    |        my.updated(k, Semigroup.maybeCombine(x, my.get(k)))      //uses semigroup combine on the values
     |      }
     |    } else {
     |      ys.foldLeft(xs) { case (mx, (k, y)) =>
