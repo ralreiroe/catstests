@@ -5,6 +5,8 @@ import cc.Spec
 
 
 /**
+  *
+  * https://www.scala-exercises.org/cats/semigroup
   * https://stackoverflow.com/questions/1262741/scala-how-to-merge-a-collection-of-maps
   */
 class SemigroupTest extends Spec {
