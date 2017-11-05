@@ -6,6 +6,25 @@ import cats.implicits._
 import org.joda.time.LocalDate
 
 object RoastEvaluationValidated {
+
+  /**
+    *
+    *  type ValidatedNel[+E, +A] = Validated[NonEmptyList[E], A]
+    *
+    *  And Validated is an Applicative Functor:
+
+  /**
+    * From Apply:
+    * if both the function and this value are Valid, apply the function
+    */
+  def ap[EE >: E, B](f: Validated[EE, A => B])(implicit EE: Semigroup[EE]): Validated[EE, B] =
+    (this, f) match {
+      case (Valid(a), Valid(f)) => Valid(f(a))
+      case (Invalid(e1), Invalid(e2)) => Invalid(EE.combine(e2, e1))    //<==== combines errors, unlike a monadic flatmap which is designed to
+      case (e@Invalid(_), _) => e
+      case (_, e@Invalid(_)) => e
+    }
+    */
   def evaluateRoastLevel(roastLevel: RoastLevel): ValidatedNel[RoastProblem, RoastLevel] = {
     if (roastLevel.value > 2)
       valid(roastLevel)
