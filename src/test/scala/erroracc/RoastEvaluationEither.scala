@@ -2,7 +2,6 @@ package erroracc
 
 import cc.Spec
 import org.joda.time.LocalDate
-import org.scalatest.{FlatSpec, Matchers}
 
 import scala.util.{Either, Left, Right}
 

@@ -21,6 +21,7 @@ trait Roast {
 }
 case class UnevaluatedRoast(level: RoastLevel, date: LocalDate, isEven: Boolean) extends Roast
 case class ApprovedRoast(level: RoastLevel, date: LocalDate, isEven: Boolean) extends Roast
+case class SemiApprovedRoast(level: RoastLevel, date: LocalDate, isEven: Boolean) extends Roast
 
 case class RoastProblem(reason: String)
 
