@@ -1,8 +1,8 @@
-package catstests
+package typeclasses
 
 import cc.Spec
 
-class FunctorTest extends Spec {
+class FunctorTypeclass extends Spec {
 
   "list functor should work" in {
 
@@ -36,9 +36,9 @@ class FunctorTest extends Spec {
 
     def map[F[_], A,B](fa: F[A])(f: A => B)(implicit functor: Functor[F]) = functor.map(fa)(f)          //<=========same as what is defined in cats.Functor[F[_}}
 
-    //    object Functor {
-    //      def apply[F[_]](implicit instance : Functor[F]) = instance.map(fa)(f)
-    //    }
+//    object Functor {
+//      def apply[F[_]](implicit instance : Functor[F]) = instance.map(fa)(f)
+//    }
 
     map(new Box(40))(_ * 2) mustBe Box(80)
 

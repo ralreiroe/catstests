@@ -32,12 +32,11 @@ class TypeClassTestEquality extends FlatSpec with Matchers {
       }
     }
 
-    def isEqual[T](a: T, b: T)(implicit equality: Equality[T]) = equality.areEqual(a, b)
+    def isEqual[T](a: T, b: Any)(implicit equality: Equality[T]) = equality.areEqual(a, b)
 
     isEqual(1.00, 1.0) shouldBe true
     isEqual(1.01, 1.0) shouldBe false
   }
-
 
   "tolerant equality " should "work" in {
 
