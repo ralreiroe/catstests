@@ -8,16 +8,16 @@ class Simple extends cc.Spec {
   def testAddress(p: Person) = Right(p)
   def testPhone(p: Person) = Left("invalid phone")
 
-  "simple error accumulation" in {
+  "error accumulation by collecting the lefts from a seq of Eithers" in {
 
     //https://stackoverflow.com/questions/21351391/how-to-accumulate-errors-in-either
 
-    def testPersonThroughSequentialExecutionRatherThanFlatmap(person: Person): Either[List[String], Person] = {
+    def testPersonThroughSequentialExecutionRatherThanFlatmap(person: Person): Either[Seq[String], Person] = {
       val name  = testPersonName(person)
       val addr  = testAddress(person)
       val phone = testPhone(person)
 
-      val errors = List(name, addr, phone) collect { case Left(err) => err }
+      val errors = Seq(name, addr, phone) collect { case Left(err) => err }
 
       if(errors.isEmpty) Right(person) else Left(errors)
     }
