@@ -18,6 +18,9 @@ class ApplicativeFunctorVsMonad extends Spec {
   "list functor should work" in {
 
 
+    //https://stackoverflow.com/questions/12307965/method-parameters-validation-in-scala-with-for-comprehension-and-monads/12309023#12309023
+
+
     def incremented(i: Int): Int = i + 1
 
     val x = Some(1)
@@ -32,21 +35,20 @@ class ApplicativeFunctorVsMonad extends Spec {
 
     case class User(name: String, age: Int)
 
+
+    def addOnOptionsAsMonad(uo: Option[Int], uo2: Option[Int]) = uo.flatMap(u => uo2.map(u2 => add(u,u2)))
+
+    import cats.implicits._
+    def addOnOptionsAsApplicative(uo: Option[Int], uo2: Option[Int]): Option[Int] = (uo |@| uo2).map((a, b) => add(a,b))
+
+
     val users = List(User("John", 38), User("Mary", 44))
 
     val u1: Option[Int] = users.find(_.name == "John").map(_.age)
     val u2: Option[Int] = users.find(_.name == "Mary").map(_.age)
 
-
-    def add2(uo: Option[Int], uo2: Option[Int]) = uo.flatMap(u => uo2.map(u2 => add(u,u2)))
-
-
-    import cats.implicits._
-
-    def add3(uo: Option[Int], uo2: Option[Int]): Option[Int] = (uo |@| uo2).map((a, b) => add(a,b))
-
-    println(add2(u1, u2))
-    println(add3(u1, u2))
+    println(addOnOptionsAsMonad(u1, u2))
+    println(addOnOptionsAsApplicative(u1, u2))
 
 
     val ff: Option[Int => Int => Int] = Some(i=> j => add(i,j))
