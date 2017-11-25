@@ -7,10 +7,10 @@ import scala.util.{Either, Left, Right}
 
 object RoastEvaluationEither2 {
   import EvaluationOptionFunctions._
-  def evaluateRoast1(roast: Roast, now: LocalDate): Either[List[RoastProblem], SemiApprovedRoast] = {
+  def evaluateRoast1(roast: Roast)( implicit now: () => LocalDate): Either[List[RoastProblem], SemiApprovedRoast] = {
     val problems: List[RoastProblem] = List(
       evaluateRoastLevel(roast.level),
-      evaluateFreshness(roast.date, now)).flatten
+      evaluateFreshness(roast.date)).flatten
 
     if (problems.isEmpty)
       Right(SemiApprovedRoast(roast.level, roast.date, roast.isEven))
@@ -32,7 +32,7 @@ object RoastEvaluationEither2 {
 
 class ErrorAccumulation2 extends Spec {
 
-  def getDate() = LocalDate.parse("2017-11-4")
+  implicit def getDate() = LocalDate.parse("2017-11-4")
 
   """but what if I had several functions returning Either[List[RoastProblem], Roast].
     |Since Either is a monad
@@ -45,25 +45,25 @@ class ErrorAccumulation2 extends Spec {
 
     val unevaluatedRoast = UnevaluatedRoast(level = RoastLevel.VeryLight, date = getDate().minusDays(14), isEven = false)
 
-    RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast, getDate) mustBe
+    RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast) mustBe
       Left(List(
         RoastProblem("roast too light, at a 1"),
         RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old")))
 
 
-    def evaluate(roast: UnevaluatedRoast, now: LocalDate) = {
+    def evaluate(roast: UnevaluatedRoast)(implicit now: () => LocalDate) = {
       val res: Either[List[RoastProblem], Roast] = for {
-        t1 <- RoastEvaluationEither2.evaluateRoast1(roast, now)
+        t1 <- RoastEvaluationEither2.evaluateRoast1(roast)
         t2 <- RoastEvaluationEither2.evaluateRoast2(roast)
       } yield t2
 
       if(res.isRight) ApprovedRoast(roast.level, roast.date, roast.isEven) else res
     }
 
-    println(evaluate(unevaluatedRoast, getDate))
+    println(evaluate(unevaluatedRoast))
 
     val unevaluatedRoast2 = UnevaluatedRoast(level = RoastLevel.Dark, date = getDate().minusDays(2), isEven = false)
-    println(evaluate(unevaluatedRoast2, getDate))
+    println(evaluate(unevaluatedRoast2))
 
 
 

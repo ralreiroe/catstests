@@ -7,10 +7,10 @@ import scala.util.{Either, Left, Right}
 
 object RoastEvaluationEither {
   import EvaluationOptionFunctions._
-  def evaluateRoast(roast: Roast): Either[List[RoastProblem], ApprovedRoast] = {
+  def evaluateRoast(roast: Roast)(implicit now: () => LocalDate): Either[List[RoastProblem], ApprovedRoast] = {
     val problems: List[RoastProblem] = List(
       evaluateRoastLevel(roast.level),
-      evaluateFreshness(roast.date, LocalDate.now),
+      evaluateFreshness(roast.date),
       evaluateEvenness(roast.isEven)).flatten //list of maybeRoastProblems flattened
 
     if (problems.isEmpty)
@@ -22,6 +22,8 @@ object RoastEvaluationEither {
 }
 
 class ErrorAccumulation extends Spec {
+
+  implicit def getDate(): LocalDate = LocalDate.parse("2017-11-4")
 
   "error acc" in {
 
@@ -38,7 +40,4 @@ class ErrorAccumulation extends Spec {
   }
 
 
-  private def getDate = {
-    LocalDate.parse("2017-11-4")
-  }
 }
