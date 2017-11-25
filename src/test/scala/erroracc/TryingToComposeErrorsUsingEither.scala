@@ -5,7 +5,7 @@ import org.joda.time.LocalDate
 
 import scala.util.{Either, Left, Right}
 
-object RoastEvaluationEither2 {
+object TryingToComposeErrorsUsingEither {
   import EvaluationOptionFunctions._
   def problemsOrRoast(roast: Roast)(implicit now: () => LocalDate): Either[List[RoastProblem], SemiApprovedRoast] = {
     val problems: List[RoastProblem] = List(
@@ -30,7 +30,7 @@ object RoastEvaluationEither2 {
 
 }
 
-class ErrorAccumulation2 extends Spec {
+class TryingToComposeErrorsUsingEither extends Spec {
 
   implicit def getDate() = LocalDate.parse("2017-11-4")
 
@@ -45,31 +45,31 @@ class ErrorAccumulation2 extends Spec {
 
     val unevaluatedRoast = UnevaluatedRoast(level = RoastLevel.VeryLight, date = getDate().minusDays(14), isEven = false)
 
-    RoastEvaluationEither2.problemsOrRoast(unevaluatedRoast) mustBe
+    TryingToComposeErrorsUsingEither.problemsOrRoast(unevaluatedRoast) mustBe
       Left(List(
         RoastProblem("roast too light, at a 1"),
         RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old")))
 
-    RoastEvaluationEither2.moreProblemsOrRoast(unevaluatedRoast) mustBe
+    TryingToComposeErrorsUsingEither.moreProblemsOrRoast(unevaluatedRoast) mustBe
       Left(List(
         RoastProblem("roast is not evenly distributed")))
 
 
     def combinedProblemsOrRoast(roast: UnevaluatedRoast)(implicit now: () => LocalDate) = {
       val res: Either[List[RoastProblem], Roast] = for {
-        t1 <- RoastEvaluationEither2.problemsOrRoast(roast)
-        t2 <- RoastEvaluationEither2.moreProblemsOrRoast(roast)
+        t1 <- TryingToComposeErrorsUsingEither.problemsOrRoast(roast)
+        t2 <- TryingToComposeErrorsUsingEither.moreProblemsOrRoast(roast)
       } yield t2
 
       if(res.isRight) ApprovedRoast(roast.level, roast.date, roast.isEven) else res
     }
 
-    combinedProblemsOrRoast(unevaluatedRoast) mustBe RoastEvaluationEither2.problemsOrRoast(unevaluatedRoast) //moreProblemsOrRoast is not evaluated - Short-circuiting is unwanted here; we don't get all errors
+    combinedProblemsOrRoast(unevaluatedRoast) mustBe TryingToComposeErrorsUsingEither.problemsOrRoast(unevaluatedRoast) //moreProblemsOrRoast is not evaluated - Short-circuiting is unwanted here; we don't get all errors
 
     val unevaluatedRoast2 = UnevaluatedRoast(level = RoastLevel.Dark, date = getDate().minusDays(2), isEven = false)
 
 
-    combinedProblemsOrRoast(unevaluatedRoast2) mustBe RoastEvaluationEither2.moreProblemsOrRoast(unevaluatedRoast)  //moreProblemsOrRoast is evaluated because problemsOrRoast is a Right
+    combinedProblemsOrRoast(unevaluatedRoast2) mustBe TryingToComposeErrorsUsingEither.moreProblemsOrRoast(unevaluatedRoast)  //moreProblemsOrRoast is evaluated because problemsOrRoast is a Right
 
 
 

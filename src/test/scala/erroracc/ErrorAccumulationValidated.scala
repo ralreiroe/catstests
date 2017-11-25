@@ -4,7 +4,7 @@ import cats.data.{Validated, ValidatedNel}
 import cats.implicits._
 import org.joda.time.LocalDate
 
-object RoastEvaluationValidated {
+object ComposingErrorsUsingValidated {
 
   /**
     *
@@ -60,7 +60,7 @@ object RoastEvaluationValidated {
   }
 }
 
-class ErrorAccumulationValidated extends cc.Spec {
+class ComposingErrorsUsingValidated extends cc.Spec {
 
   """error acc via Validated
     |I can take my approved roast and apply more validation functions to further scrutinize, grade, or otherwise classify roasts.
@@ -69,9 +69,9 @@ class ErrorAccumulationValidated extends cc.Spec {
 
     val unevaluatedRoast = UnevaluatedRoast(level = RoastLevel.VeryLight, date = LocalDate.now().minusDays(14), isEven = false)
 
-    val validatedNel1 = RoastEvaluationValidated.evaluateRoast1(unevaluatedRoast)
+    val validatedNel1 = ComposingErrorsUsingValidated.evaluateRoast1(unevaluatedRoast)
     println(validatedNel1)
-    val validatedNel2 = RoastEvaluationValidated.evaluateRoast2(unevaluatedRoast)
+    val validatedNel2 = ComposingErrorsUsingValidated.evaluateRoast2(unevaluatedRoast)
     println(validatedNel2)
     println(((validatedNel1 |@| validatedNel2).map((a, b) => (a,b))))
 

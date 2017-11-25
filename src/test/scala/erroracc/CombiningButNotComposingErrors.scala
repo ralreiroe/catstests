@@ -5,7 +5,7 @@ import org.joda.time.LocalDate
 
 import scala.util.{Either, Left, Right}
 
-object RoastEvaluationEither {
+object CombiningButNotComposingErrors {
   import EvaluationOptionFunctions._
 
   def problemsOrRoast(roast: Roast)(implicit now: () => LocalDate): Either[List[RoastProblem], ApprovedRoast] = {
@@ -22,13 +22,13 @@ object RoastEvaluationEither {
 
 }
 
-class ErrorAccumulation extends Spec {
+class CombiningButNotComposingErrors extends Spec {
 
   implicit def getDate(): LocalDate = LocalDate.parse("2017-11-4")
 
   "error acc" in {
 
-    val problemsOrRoast = RoastEvaluationEither.problemsOrRoast(UnevaluatedRoast(level = RoastLevel.VeryLight, date = getDate.minusDays(14), isEven = false))
+    val problemsOrRoast = CombiningButNotComposingErrors.problemsOrRoast(UnevaluatedRoast(level = RoastLevel.VeryLight, date = getDate.minusDays(14), isEven = false))
 
     val expected = Left(List(RoastProblem("roast too light, at a 1"), RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old"), RoastProblem("roast is not evenly distributed")))
 
