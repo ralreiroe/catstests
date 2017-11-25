@@ -50,6 +50,10 @@ class ErrorAccumulation2 extends Spec {
         RoastProblem("roast too light, at a 1"),
         RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old")))
 
+    RoastEvaluationEither2.evaluateRoast2(unevaluatedRoast) mustBe
+      Left(List(
+        RoastProblem("roast is not evenly distributed")))
+
 
     def evaluate(roast: UnevaluatedRoast)(implicit now: () => LocalDate) = {
       val res: Either[List[RoastProblem], Roast] = for {
@@ -60,10 +64,12 @@ class ErrorAccumulation2 extends Spec {
       if(res.isRight) ApprovedRoast(roast.level, roast.date, roast.isEven) else res
     }
 
-    println(evaluate(unevaluatedRoast))
+    evaluate(unevaluatedRoast) mustBe RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast) //evaluateRoast2 is not evaluated - Short-circuiting is unwanted here; we don't get all errors
 
     val unevaluatedRoast2 = UnevaluatedRoast(level = RoastLevel.Dark, date = getDate().minusDays(2), isEven = false)
-    println(evaluate(unevaluatedRoast2))
+
+
+    evaluate(unevaluatedRoast2) mustBe RoastEvaluationEither2.evaluateRoast2(unevaluatedRoast)  //evaluateRoast2 is evaluated because evaluateRoast1 is a Right
 
 
 
