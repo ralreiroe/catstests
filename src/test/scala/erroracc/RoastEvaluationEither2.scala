@@ -7,10 +7,10 @@ import scala.util.{Either, Left, Right}
 
 object RoastEvaluationEither2 {
   import EvaluationOptionFunctions._
-  def evaluateRoast1(roast: Roast)( implicit now: () => LocalDate): Either[List[RoastProblem], SemiApprovedRoast] = {
+  def problemsOrRoast(roast: Roast)(implicit now: () => LocalDate): Either[List[RoastProblem], SemiApprovedRoast] = {
     val problems: List[RoastProblem] = List(
-      evaluateRoastLevel(roast.level),
-      evaluateFreshness(roast.date)).flatten
+      maybeLevelProblem(roast.level),
+      maybeFreshnessProblem(roast.date)).flatten
 
     if (problems.isEmpty)
       Right(SemiApprovedRoast(roast.level, roast.date, roast.isEven))
@@ -18,9 +18,9 @@ object RoastEvaluationEither2 {
       Left(problems)
   }
 
-  def evaluateRoast2(roast: Roast): Either[List[RoastProblem], Roast] = {
+  def moreProblemsOrRoast(roast: Roast): Either[List[RoastProblem], Roast] = {
     val problems: List[RoastProblem] = List(
-      evaluateEvenness(roast.isEven)).flatten
+      maybeEvennessProblem(roast.isEven)).flatten
 
     if (problems.isEmpty)
       Right(SemiApprovedRoast(roast.level, roast.date, roast.isEven))
@@ -45,31 +45,31 @@ class ErrorAccumulation2 extends Spec {
 
     val unevaluatedRoast = UnevaluatedRoast(level = RoastLevel.VeryLight, date = getDate().minusDays(14), isEven = false)
 
-    RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast) mustBe
+    RoastEvaluationEither2.problemsOrRoast(unevaluatedRoast) mustBe
       Left(List(
         RoastProblem("roast too light, at a 1"),
         RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old")))
 
-    RoastEvaluationEither2.evaluateRoast2(unevaluatedRoast) mustBe
+    RoastEvaluationEither2.moreProblemsOrRoast(unevaluatedRoast) mustBe
       Left(List(
         RoastProblem("roast is not evenly distributed")))
 
 
-    def evaluate(roast: UnevaluatedRoast)(implicit now: () => LocalDate) = {
+    def combinedProblemsOrRoast(roast: UnevaluatedRoast)(implicit now: () => LocalDate) = {
       val res: Either[List[RoastProblem], Roast] = for {
-        t1 <- RoastEvaluationEither2.evaluateRoast1(roast)
-        t2 <- RoastEvaluationEither2.evaluateRoast2(roast)
+        t1 <- RoastEvaluationEither2.problemsOrRoast(roast)
+        t2 <- RoastEvaluationEither2.moreProblemsOrRoast(roast)
       } yield t2
 
       if(res.isRight) ApprovedRoast(roast.level, roast.date, roast.isEven) else res
     }
 
-    evaluate(unevaluatedRoast) mustBe RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast) //evaluateRoast2 is not evaluated - Short-circuiting is unwanted here; we don't get all errors
+    combinedProblemsOrRoast(unevaluatedRoast) mustBe RoastEvaluationEither2.problemsOrRoast(unevaluatedRoast) //moreProblemsOrRoast is not evaluated - Short-circuiting is unwanted here; we don't get all errors
 
     val unevaluatedRoast2 = UnevaluatedRoast(level = RoastLevel.Dark, date = getDate().minusDays(2), isEven = false)
 
 
-    evaluate(unevaluatedRoast2) mustBe RoastEvaluationEither2.evaluateRoast2(unevaluatedRoast)  //evaluateRoast2 is evaluated because evaluateRoast1 is a Right
+    combinedProblemsOrRoast(unevaluatedRoast2) mustBe RoastEvaluationEither2.moreProblemsOrRoast(unevaluatedRoast)  //moreProblemsOrRoast is evaluated because problemsOrRoast is a Right
 
 
 
