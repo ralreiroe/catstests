@@ -1,7 +1,6 @@
 package erroracc
 
-import cats.data.Validated.{invalidNel, valid}
-import cats.data.ValidatedNel
+import cats.data.{Validated, ValidatedNel}
 import cats.implicits._
 import org.joda.time.LocalDate
 
@@ -11,7 +10,7 @@ object RoastEvaluationValidated {
     *
     *  type ValidatedNel[+E, +A] = Validated[NonEmptyList[E], A]
     *
-    *  And Validated is an Applicative Functor:
+    *  And Validated is an Applicative Functor: It has an ap method: see cats.data.Validated
 
   /**
     * From Apply:
@@ -21,29 +20,30 @@ object RoastEvaluationValidated {
     (this, f) match {
       case (Valid(a), Valid(f)) => Valid(f(a))
       case (Invalid(e1), Invalid(e2)) => Invalid(EE.combine(e2, e1))    //<==== combines errors, unlike a monadic flatmap which is designed to
+
       case (e@Invalid(_), _) => e
       case (_, e@Invalid(_)) => e
     }
     */
   def evaluateRoastLevel(roastLevel: RoastLevel): ValidatedNel[RoastProblem, RoastLevel] = {
     if (roastLevel.value > 2)
-      valid(roastLevel)
+      Validated.valid(roastLevel)
     else
-      invalidNel(RoastProblem(s"roast too light, at a ${roastLevel.value}"))
+      Validated.invalidNel(RoastProblem(s"roast too light, at a ${roastLevel.value}"))
   }
 
   def evaluateFreshness(roastDate: LocalDate): ValidatedNel[RoastProblem, LocalDate] = {
     if (roastDate.isAfter(LocalDate.now.minusDays(3)))
-      valid(roastDate)
+      Validated.valid(roastDate)
     else
-      invalidNel(RoastProblem(s"not fresh, roast date ${roastDate} is more than 3 days old"))
+      Validated.invalidNel(RoastProblem(s"not fresh, roast date ${roastDate} is more than 3 days old"))
   }
 
   def evaluateEvenness(roastIsEven: Boolean): ValidatedNel[RoastProblem, Boolean] = {
     if (roastIsEven)
-      valid(true)
+      Validated.valid(true)
     else
-      invalidNel(RoastProblem("roast is not evenly distributed"))
+      Validated.invalidNel(RoastProblem("roast is not evenly distributed"))
   }
 
   def evaluateRoast1(roast: Roast): ValidatedNel[RoastProblem, SemiApprovedRoast] = {
