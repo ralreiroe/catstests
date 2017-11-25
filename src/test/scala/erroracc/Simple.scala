@@ -13,11 +13,11 @@ class Simple extends cc.Spec {
     //https://stackoverflow.com/questions/21351391/how-to-accumulate-errors-in-either
 
     def testPersonThroughSequentialExecutionRatherThanFlatmap(person: Person): Either[Seq[String], Person] = {
-      val name  = testPersonName(person)
-      val addr  = testAddress(person)
-      val phone = testPhone(person)
+      val errstrOrPerson  = testPersonName(person)
+      val errstr2OrPerson  = testAddress(person)
+      val errstr3OrPerson = testPhone(person)
 
-      val errors = Seq(name, addr, phone) collect { case Left(err) => err }
+      val errors = Seq(errstrOrPerson, errstr2OrPerson, errstr3OrPerson) collect { case Left(err) => err }
 
       if(errors.isEmpty) Right(person) else Left(errors)
     }

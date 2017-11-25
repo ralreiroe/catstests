@@ -32,15 +32,22 @@ object RoastEvaluationEither2 {
 
 class ErrorAccumulation2 extends Spec {
 
-  """but what if I had several Either[List[RoastProblem], Roast] returning functions.
+  """but what if I had several functions returning Either[List[RoastProblem], Roast].
     |Since Either is a monad
     |
-    |for comprehensions don't really mix with error accumulations. In fact, you generally use them when you don't want fine grained error control.
+    |https://stackoverflow.com/questions/21351391/how-to-accumulate-errors-in-either
+    |
+    |for-comprehensions (which desugar to a combination of calls to flatMap and map) are designed to allow you to sequence monadic computations in such a way that you have access to the result of earlier computations in subsequent steps.
     |
     |A for comprehension will "short-circuit" itself on the first error found, and this is almost always what you want.""".stripMargin in {
 
     val unevaluatedRoast = UnevaluatedRoast(level = RoastLevel.VeryLight, date = LocalDate.now().minusDays(14), isEven = false)
-    RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast) mustBe Left(List(RoastProblem("roast too light, at a 1"), RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old")))
+
+    RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast) mustBe
+      Left(List(
+        RoastProblem("roast too light, at a 1"),
+        RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old")))
+
 
     def evaluate(roast: UnevaluatedRoast) = {
       val res: Either[List[RoastProblem], Roast] = for {

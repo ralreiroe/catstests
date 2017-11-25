@@ -11,7 +11,7 @@ object RoastEvaluationEither {
     val problems: List[RoastProblem] = List(
       evaluateRoastLevel(roast.level),
       evaluateFreshness(roast.date),
-      evaluateEvenness(roast.isEven)).flatten
+      evaluateEvenness(roast.isEven)).flatten //list of maybeRoastProblems flattened
 
     if (problems.isEmpty)
       Right(ApprovedRoast(roast.level, roast.date, roast.isEven))
@@ -25,7 +25,10 @@ class ErrorAccumulation extends Spec {
 
   "error acc" in {
 
-    RoastEvaluationEither.evaluateRoast(UnevaluatedRoast(level = RoastLevel.VeryLight, date = LocalDate.now().minusDays(14), isEven = false)) mustBe Left(List(RoastProblem("roast too light, at a 1"), RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old"), RoastProblem("roast is not evenly distributed))")))
+    val roastProblemsOrApprovedRoast = RoastEvaluationEither.evaluateRoast(UnevaluatedRoast(level = RoastLevel.VeryLight, date = LocalDate.now().minusDays(14), isEven = false))
+
+    roastProblemsOrApprovedRoast mustBe
+      Left(List(RoastProblem("roast too light, at a 1"), RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old"), RoastProblem("roast is not evenly distributed))")))
 
   }
 
