@@ -10,7 +10,9 @@ class Simple extends cc.Spec {
     case class Person(name: String, address: String, phone: String)
 
     def testPersonName(p: Person): Either[String, Person] = Left("name too short")
+
     def testAddress(p: Person) = Right(p)
+
     def testPhone(p: Person) = Left("invalid phone")
 
     //https://stackoverflow.com/questions/21351391/how-to-accumulate-errors-in-either
@@ -29,23 +31,31 @@ class Simple extends cc.Spec {
 
   }
 
+  case class Person(name: String, address: String, phone: String)
+
+  def testPersonName(p: Person): Validated[String, Person] = Invalid("name too short")
+  def testAddress(p: Person): Validated[String, Person] = Valid(p)
+  def testPhone(p: Person): Validated[String, Person] = Invalid("invalid phone")
+
+  val p = Person("", "", "")
+
   "error accumulation by composing a Set of Validateds" in {
 
-    case class Person(name: String, address: String, phone: String)
-
-    def testPersonName(p: Person): Validated[String, Person] = Invalid("name too short")
-    def testAddress(p: Person): Validated[String, Person] = Valid(p)
-    def testPhone(p: Person): Validated[String, Person] = Invalid("invalid phone")
-
     import cats.implicits._
-    val p = Person("", "", "")
-    (testPersonName(p) |@| testAddress(p) |@| testPhone(p)).map((a,_,_) => (a)) mustBe Invalid("name too shortinvalid phone")
-
-    def testingFunction1(p:Person): Validated[String, Person] = (testPersonName(p) |@| testAddress(p) |@| testPhone(p)).map((a,_,_) => a)
-
-    def testSSN(p: Person) = Valid(p)
-
-
+    (testPersonName(p) |@| testAddress(p) |@| testPhone(p)).map((a, _, _) => (a)) mustBe Invalid("name too shortinvalid phone")
 
   }
+
+  import cats.implicits._
+  def testingFunction1(p: Person): Validated[String, Person] = (testPersonName(p) |@| testAddress(p) |@| testPhone(p)).map((a, _, _) => a)
+
+  "now compose with further test functions easily" in {
+
+    def testSSN(p: Person): Validated[String, Person] = Invalid("missing SSN") //a new testing function
+
+    import cats.implicits._
+    (testingFunction1(p) |@| testSSN(p)).map((a, _) => a) mustBe Invalid("name too shortinvalid phonemissing SSN")
+
+  }
+
 }
