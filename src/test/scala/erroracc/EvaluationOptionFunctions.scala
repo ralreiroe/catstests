@@ -10,8 +10,8 @@ object EvaluationOptionFunctions {
       Some(RoastProblem(s"roast too light, at a ${roastLevel.value}"))
   }
 
-  def evaluateFreshness(roastDate: LocalDate): Option[RoastProblem] = {
-    if (roastDate.isAfter(LocalDate.now.minusDays(3)))
+  def evaluateFreshness(roastDate: LocalDate, now: LocalDate): Option[RoastProblem] = {
+    if (roastDate.isAfter(now.minusDays(3)))
       None
     else
       Some(RoastProblem(s"not fresh, roast date ${roastDate} is more than 3 days old"))

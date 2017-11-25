@@ -7,10 +7,10 @@ import scala.util.{Either, Left, Right}
 
 object RoastEvaluationEither2 {
   import EvaluationOptionFunctions._
-  def evaluateRoast1(roast: Roast): Either[List[RoastProblem], SemiApprovedRoast] = {
+  def evaluateRoast1(roast: Roast, now: LocalDate): Either[List[RoastProblem], SemiApprovedRoast] = {
     val problems: List[RoastProblem] = List(
       evaluateRoastLevel(roast.level),
-      evaluateFreshness(roast.date)).flatten
+      evaluateFreshness(roast.date, now)).flatten
 
     if (problems.isEmpty)
       Right(SemiApprovedRoast(roast.level, roast.date, roast.isEven))
@@ -32,6 +32,8 @@ object RoastEvaluationEither2 {
 
 class ErrorAccumulation2 extends Spec {
 
+  def getDate() = LocalDate.parse("2017-11-4")
+
   """but what if I had several functions returning Either[List[RoastProblem], Roast].
     |Since Either is a monad
     |
@@ -41,31 +43,30 @@ class ErrorAccumulation2 extends Spec {
     |
     |A for comprehension will "short-circuit" itself on the first error found, and this is almost always what you want.""".stripMargin in {
 
-    val unevaluatedRoast = UnevaluatedRoast(level = RoastLevel.VeryLight, date = LocalDate.now().minusDays(14), isEven = false)
+    val unevaluatedRoast = UnevaluatedRoast(level = RoastLevel.VeryLight, date = getDate().minusDays(14), isEven = false)
 
-    RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast) mustBe
+    RoastEvaluationEither2.evaluateRoast1(unevaluatedRoast, getDate) mustBe
       Left(List(
         RoastProblem("roast too light, at a 1"),
         RoastProblem("not fresh, roast date 2017-10-21 is more than 3 days old")))
 
 
-    def evaluate(roast: UnevaluatedRoast) = {
+    def evaluate(roast: UnevaluatedRoast, now: LocalDate) = {
       val res: Either[List[RoastProblem], Roast] = for {
-        t1 <- RoastEvaluationEither2.evaluateRoast1(roast)
+        t1 <- RoastEvaluationEither2.evaluateRoast1(roast, now)
         t2 <- RoastEvaluationEither2.evaluateRoast2(roast)
       } yield t2
 
       if(res.isRight) ApprovedRoast(roast.level, roast.date, roast.isEven) else res
     }
 
-    println(evaluate(unevaluatedRoast))
+    println(evaluate(unevaluatedRoast, getDate))
 
-    val unevaluatedRoast2 = UnevaluatedRoast(level = RoastLevel.Dark, date = LocalDate.now().minusDays(2), isEven = false)
-    println(evaluate(unevaluatedRoast2))
+    val unevaluatedRoast2 = UnevaluatedRoast(level = RoastLevel.Dark, date = getDate().minusDays(2), isEven = false)
+    println(evaluate(unevaluatedRoast2, getDate))
 
 
 
   }
-
 
 }
