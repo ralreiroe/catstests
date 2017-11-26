@@ -40,23 +40,23 @@ class TraverseTest extends Spec {
   "traverse on try" in {
     def parseToInt(s: String): Try[Int] = Either.catchOnly[NumberFormatException](s.toInt).toTry
 
-    val res1 =  List("1", "2", "3").map(parseToInt)
-    println(res1)
-    res1 mustBe List(Success(1), Success(2), Success(3))
+    List("1", "2", "3").map(parseToInt) mustBe List(Success(1), Success(2), Success(3))
 
-    val res =  List("1", "2", "3").traverse(parseToInt)
-    println(res)
-    res mustBe Success(List(1, 2, 3))                                             //<=============
+    List("1", "2", "3").traverse(parseToInt) mustBe Success(List(1, 2, 3))                                             //<=============
 
-    val x0 = List("1", "two", "3").map(parseToInt)
+    val listCausingOneFailure = List("1", "two", "3")
+    val x0: List[Try[Int]] = listCausingOneFailure.map(parseToInt)
     println(x0)
 //    x0 mustBe List(Success(1), Failure(java.lang.NumberFormatException: For input string: "two"), Success(3))
 
-    val x1: Try[List[Int]] = List("1", "two", "3").traverse(parseToInt)
+    val x1: Try[List[Int]] = listCausingOneFailure.traverse(parseToInt)
     println(x1)
-    x1.get mustBe a[Failure[_]]
-    x1.get mustBe a[NumberFormatException]
-//    x1.get.failed.get.getLocalizedMessage mustBe ("""For input string: "two"""")     //
+    x1.failed mustBe a[Success[_]]
+    x1.failed.get mustBe a[NumberFormatException]
+    x1.failed.get.getLocalizedMessage mustBe ("""For input string: "two"""")     //
+
+    val x2: Try[List[Int]] = List("1", "two", "xxx").traverse(parseToInt)
+    println(x2)
 
 
 
