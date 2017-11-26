@@ -31,12 +31,11 @@ class MonadTest2 extends Spec {
       case exId => {
         val fids = getFormatIds(exId)
 
-        val fileformats: List[String] = fids.map {
-          case fid => getExchangeFormat(exId, fid)
-        }
+        val triedStrings: List[Try[String]] = fids.flatMap {
+          case fid => {
 
-        val triedStrings: List[Try[String]] = fileformats.flatMap {
-          ff => validateDatePatterns(ff)
+            validateDatePatterns(getExchangeFormat(exId, fid))
+          }
         }
 
         val res: List[Option[DateFormatConfigProblem]] = triedStrings.map {
