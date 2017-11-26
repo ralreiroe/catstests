@@ -27,31 +27,20 @@ class MonadTest2 extends Spec {
       }
     }
 
-    val res: List[DateFormatConfigProblem] = exchangeIds.flatMap {
-      case exId => {
-        val fids = getFormatIds(exId)
-
-        val triedStrings: List[Try[String]] = fids.flatMap {
-          case fid => {
-
-            validateDatePatterns(getExchangeFormat(exId, fid))
-          }
-        }
-
-        val res: List[Option[DateFormatConfigProblem]] = triedStrings.map {
-          case t => t match {
-            case Failure(ex) => Some(DateFormatConfigProblem(exId, ex.getMessage))
-            case successful => None
-          }
-        }
-
-        res collect {
-          case Some(x) => x
-         }
+    val res2 =
+    (for {
+      exId <- exchangeIds
+      fid <- getFormatIds(exId)
+      ff = getExchangeFormat(exId, fid)
+      triedString <- validateDatePatterns(ff)
+    } yield {
+      triedString match {
+        case Failure(ex) => Some(DateFormatConfigProblem(exId, ex.getMessage))
+        case successful => None
       }
-    }
+    }) collect { case Some(x) => x}
 
-    println(res)
+    println(res2)
 
 
 
