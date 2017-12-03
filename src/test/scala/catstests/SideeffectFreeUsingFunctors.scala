@@ -15,18 +15,18 @@ class SideeffectFreeUsingFunctors extends Spec {
 
     def nosideeffect(i: Int) = i+1
 
-    Some(5).map(nosideeffect)
+    def nosideeffect2(oi: Option[Int]) = oi.map(nosideeffect)
+
+    //so a) nosideeffect, a function on Int, can be reused as a function on Option[Int]
+    //b) nosideeffect does not have to check for null or catch NullpointerExceptions to stay pure. That's done in the map function
 
 
-    def getInt(x: Int): Int = x match {
-      case 5 => 5
-      case _ => y
-    }
-    Option.apply(getInt(4)).map(nosideeffect)
+    def getInt: Int = y
+    Option.apply(getInt).map(nosideeffect) mustBe null
 
 
     Try.apply(1).map(nosideeffect)
-    println( Try.apply({throw new Exception; 1}).map(nosideeffect) )
+    Try.apply({throw new Exception; 1}).map(nosideeffect)
 
 
 
