@@ -2,6 +2,8 @@ package catstests
 
 import cc.Spec
 
+import scala.concurrent.Future
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -51,7 +53,13 @@ class MonadTest extends Spec {
   import StudentGrades._
 
 
-  "a" in {
+  "option composition without flatmap" in {
+
+    /**
+      * Option[A]
+      * def flatMap[B](f: A => Option[B]): Option[B] =
+    if (isEmpty) None else f(this.get)
+      */
 
 
     val studentGrades = getStudentById(5)
@@ -74,8 +82,75 @@ class MonadTest extends Spec {
       case nostudent => None
 
     }
+  }
+
+  "future" in {
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    def funcOnInt(i: Int) = Future(i)
 
 
+    /**
+      *
+      * trait Future[+T] extends Awaitable[T] {
+      *   def flatMap[S](f: T => Future[S])(implicit executor: ExecutionContext): Future[S] = transformWith {
+    case Success(s) => f(s)
+    case Failure(_) => this.asInstanceOf[Future[S]]
+  }
+
+  override def transformWith[S](f: Try[T] => Future[S])(implicit executor: ExecutionContext): Future[S] = {
+    val p = new DefaultPromise[S]()
+    onComplete {
+      v => try f(v) match {
+        case fut if fut eq this => p complete v.asInstanceOf[Try[S]]
+        case dp: DefaultPromise[_] => dp.asInstanceOf[DefaultPromise[S]].linkRootOf(p)
+        case fut => p completeWith fut
+      } catch { case NonFatal(t) => p failure t }
+    }
+    p.future
+  }
+
+
+    def onComplete[U](func: Try[T] => U)(implicit executor: ExecutionContext): Unit = {
+      val completedAs = value.get
+      val preparedEC = executor.prepare
+      (new CallbackRunnable(preparedEC, func)).executeWithValue(completedAs)
+    }
+      */
+
+  }
+
+  "try" in {
+
+    /**
+      *final case class Success[+T](value: T) extends Try[T] {
+      *     try f(value) catch { case NonFatal(e) => Failure(e) }
+
+      */
+
+  }
+
+  "either" in {
+
+    /**
+      *   def flatMap[AA >: A, Y](f: B => Either[AA, Y]): Either[AA, Y] = this match {
+    case Right(b) => f(b)
+    case Left(a)  => this.asInstanceOf[Either[AA, Y]]
+  }
+      */
+  }
+
+  "list" in {
+
+    /**
+      *   def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+    def builder = bf(repr) // extracted to keep method size under 35 bytes, so that it can be JIT-inlined
+    val b = builder
+    for (x <- this) b ++= f(x).seq      //add result elements to new collection b
+    b.result
+  }
+      */
   }
 
 }
