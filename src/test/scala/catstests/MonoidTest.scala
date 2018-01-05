@@ -29,7 +29,7 @@ case class Invalid(reason: String) extends ValidationResult
 object ValidationResult {
 
   implicit val validationResultMonoid = new Monoid[ValidationResult] {          //<======= implicit required (1)
-  def empty: ValidationResult = Valid
+    def empty: ValidationResult = Valid
     def combine(x: ValidationResult, y: ValidationResult): ValidationResult = (x, y) match {    //combining - accumulating reasons...
       case (Valid, Valid) => Valid
       case (Invalid(m1 @ _), Invalid(m2 @ _)) => Invalid(m1 + "|||" + m2)
@@ -37,6 +37,15 @@ object ValidationResult {
       case (_, i @ Invalid(_)) => i
     }
   }
+  implicit def monoidTuple[A: Monoid, B: Monoid]: Monoid[(A, B)] =
+    new Monoid[(A, B)] {
+      def combine(x: (A, B), y: (A, B)): (A, B) = {
+        val (xa, xb) = x
+        val (ya, yb) = y
+        (Monoid[A].combine(xa, ya), Monoid[B].combine(xb, yb))
+      }
+      def empty: (A, B) = (Monoid[A].empty, Monoid[B].empty)
+    }
 }
 
 
