@@ -39,7 +39,9 @@ object ValidationResult {
   }
 }
 
-
+/**
+  * But why monoids ? What do we stand to benefit from monoids ? Well, it turns out that we can write very interesting programs over any data type, knowing nothing about that type other than that it’s a monoid.
+  */
 object ExprLogic {
 
   val monoid: Monoid[ValidationResult] = Monoid[ValidationResult]                         //<======= (1) is required here
