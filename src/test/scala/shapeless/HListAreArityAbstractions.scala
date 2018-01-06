@@ -9,6 +9,7 @@ class HListAreArityAbstractions extends Spec {
 
   "flattening" in {
 
+
     import shapeless._
     import ops.tuple.FlatMapper
     import syntax.std.tuple._
@@ -36,7 +37,8 @@ class HListAreArityAbstractions extends Spec {
       * The tuple vs list naming isn't significant. HLists could be named as HTuples. The difference is that in Scala+Haskell, you can do this with a tuple (using Scala syntax):
 
 def append2[A,B,C](in: (A,B), v: C) : (A,B,C) = (in._1, in._2, v)
-to take an input tuple of exactly two elements of any type, append a third element, and return a fully typed tuple with exactly three elements. But while this is completely generic over types, it has to explicitly specify the input/output lengths.
+to take an input tuple of exactly two elements of any type, append a third element, and return a fully typed tuple with exactly three elements. But while this is completely generic over types, it has to explicitly specify the input/output
+    *lengths*.
 
 What a Haskell style HList lets you do is make this generic over length, so you can append to any length of tuple/list and get back a fully statically typed tuple/list. This benefit also applies to homogeneously typed collections where you can append an int to a list of exactly n ints and get back a list that is statically typed to have exactly (n+1) ints without explicitly specifying n.
       */
@@ -66,7 +68,7 @@ What a Haskell style HList lets you do is make this generic over length, so you 
 
     println(step1)
 
-    val step2 = step1.addElement(nodes => 2.0)    //TestedClass[(Int, Double)] correctly infered in REPL only
+    val step2: TestedClass[(Int, Double)] = step1.addElement(nodes => 2.0)    //TestedClass[(Int, Double)] correctly infered in REPL only
 
     println(step2)
   }
