@@ -29,22 +29,17 @@ object TupleGeneric {
 
 class CaseClassToTuple extends Spec {
 
-  "" in {
-
+  "convert example" in {
     case class Person(name: String, age: Int)
 
     val gen = TupleGeneric[Person]
 
     val mary = Person("Mary", 37)
-
     val res0: (String, Int) = gen.to(mary)
-
-    println(res0)
+    res0 mustBe ("Mary", 37)
 
     val res1: Person = gen.from(("Fred", 23))
-
-    println(res1)
-
+    res1 mustBe Person("Fred", 23)
   }
 
 }
