@@ -68,7 +68,7 @@ What a Haskell style HList lets you do is make this generic over length, so you 
 
     println(step1)
 
-    val step2: TestedClass[(Int, Double)] = step1.addElement(nodes => 2.0)    //TestedClass[(Int, Double)] correctly infered in REPL only
+    val step2: TestedClass[(Int, Double)] = step1.addElement(nodes => 2.0)
 
     println(step2)
   }
