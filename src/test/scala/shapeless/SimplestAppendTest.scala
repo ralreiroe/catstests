@@ -4,16 +4,12 @@ import cc.Spec
 import shapeless.labelled.FieldType
 import shapeless.syntax.SingletonOps
 
-case class One(fname: String, lname: String)
-
-case class Two(name: String)
-
 /**
   * https://github.com/milessabin/shapeless/wiki/Feature-overview:-shapeless-2.0.0#extensible-records
   */
 class SimplestAppendTest extends Spec {
 
-  "kejsjf" in {
+  "extensible record with strings" in {
 
     import shapeless._ ; import syntax.singleton._ ; import record._
 
@@ -32,6 +28,11 @@ class SimplestAppendTest extends Spec {
     println(extended.keys)
     println(extended)
 
+//    case class Book(author: String, title: String, id: Long, price: Double)
+//
+//
+//
+//    LabelledGeneric[Book].from(book)
 
 
   }
@@ -41,7 +42,7 @@ class SimplestAppendTest extends Spec {
 
     import shapeless._ ; import syntax.singleton._ ; import record._
 
-    val book: ::[FieldType[SingletonOps#T, String], ::[FieldType[SingletonOps#T, String], ::[FieldType[SingletonOps#T, Int], ::[FieldType[SingletonOps#T, Double], HNil]]]] =
+    val book =
       ('author ->> "Benjamin Pierce") ::
         ('title  ->> "Types and Programming Languages") ::
         ('id     ->>  262162091) ::
@@ -58,8 +59,18 @@ class SimplestAppendTest extends Spec {
 
 
 
+    case class Book(author: String, title: String, id: Long, price: Double)
+
+
 
 
   }
+
+
+  case class One(fname: String, lname: String)
+
+  case class Two(name: String)
+
+
 
 }
