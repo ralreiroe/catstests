@@ -1,6 +1,8 @@
 package shapeless
 
 import cc.Spec
+import shapeless.labelled.FieldType
+import shapeless.syntax.SingletonOps
 
 case class One(fname: String, lname: String)
 
@@ -39,7 +41,7 @@ class SimplestAppendTest extends Spec {
 
     import shapeless._ ; import syntax.singleton._ ; import record._
 
-    val book =
+    val book: ::[FieldType[SingletonOps#T, String], ::[FieldType[SingletonOps#T, String], ::[FieldType[SingletonOps#T, Int], ::[FieldType[SingletonOps#T, Double], HNil]]]] =
       ('author ->> "Benjamin Pierce") ::
         ('title  ->> "Types and Programming Languages") ::
         ('id     ->>  262162091) ::
@@ -53,6 +55,8 @@ class SimplestAppendTest extends Spec {
 
     println(extended.keys)
     println(extended)
+
+
 
 
 

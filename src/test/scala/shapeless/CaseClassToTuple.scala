@@ -3,6 +3,10 @@ package shapeless
 import cc.Spec
 import ops.hlist.Tupler
 
+/**
+  *
+  * https://gist.github.com/milessabin/fbd9da3361611b91da17
+  */
 trait TupleGeneric[C <: Product] extends Serializable {
   type Repr <: Product
 
@@ -40,6 +44,17 @@ class CaseClassToTuple extends Spec {
 
     val res1: Person = gen.from(("Fred", 23))
     res1 mustBe Person("Fred", 23)
+  }
+
+  "2" in {
+    case class One(fname: String, lname: String)
+    case class Two(name: String)
+
+    class Holder(one: One) {
+//      def apply(a: Symbol) = one.
+    }
+
+
   }
 
 }
