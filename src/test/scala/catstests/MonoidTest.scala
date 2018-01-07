@@ -85,7 +85,16 @@ case class InvalidState(errorMsg: String)
 
 class MonoidTest extends FlatSpec with Matchers {
 
-  import ExprLogic.validate
+  "a standard cats monoid" should "just require importing cats.implicits._" in {
+
+    import cats.kernel.Monoid
+    import cats.implicits._
+
+    Monoid[String].combine("a", "b") shouldBe "ab"
+
+  }
+
+  import ExprLogic.validate     //this also puts the ValidationResult monoid into scope
 
   "combining validations" should "work" in {
     val listOfFieldNames = List("abc", "def")
