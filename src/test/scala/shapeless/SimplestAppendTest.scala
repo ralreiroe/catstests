@@ -50,6 +50,7 @@ class SimplestAppendTest extends Spec {
         HNil
 
 
+    book('author) mustBe "Benjamin Pierce"
 
     val extended = book + ('inPrint ->> true)
 
