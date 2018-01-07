@@ -26,11 +26,7 @@ class CaseClassToHList extends Spec {
     val gen = LabelledGeneric[UserWithAge]
     val u = UserWithAge("Julien", 30)
 
-    val h: ::[FieldType[String with labelled.KeyTag[Symbol with tag.Tagged[{
-  type name
-}], String], String], ::[FieldType[Int with labelled.KeyTag[Symbol with tag.Tagged[{
-  type age
-}], Int], Int], HNil]] = gen.to(u) // returns Julien :: 30 :: HNil
+    val h = gen.to(u) // returns Julien :: 30 :: HNil
     println(h)
     println(gen.from(h)) // return UserWithAge("Julien", 30)
   }
