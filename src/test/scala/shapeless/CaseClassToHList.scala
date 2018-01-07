@@ -14,8 +14,8 @@ class CaseClassToHList extends Spec {
     val u = UserWithAge("Julien", 30)
 
     val h: ::[String, ::[Int, HNil]] = gen.to(u) // returns Julien :: 30 :: HNil
-    println(h)
-    println(gen.from(h)) // return UserWithAge("Julien", 30)
+    h mustBe "Julien" :: 30 :: HNil
+    gen.from(h) mustBe UserWithAge("Julien", 30)
   }
 
   "to ExtensibleRecord" in {
@@ -29,6 +29,8 @@ class CaseClassToHList extends Spec {
     val h = gen.to(u) // returns Julien :: 30 :: HNil
     println(h)
     println(gen.from(h)) // return UserWithAge("Julien", 30)
+
+    h mustBe "Julien" :: 30 :: HNil
   }
 
 }

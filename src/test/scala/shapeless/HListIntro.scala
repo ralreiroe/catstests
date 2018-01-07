@@ -21,7 +21,7 @@ class HListIntro extends Spec {
 
   }
 
-  "an HList" in {
+  "an HList is a mix between a tuple and a list; a extendible tuple" in {
 
 //    import shapeless._
 
