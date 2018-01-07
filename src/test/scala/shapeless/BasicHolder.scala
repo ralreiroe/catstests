@@ -4,10 +4,7 @@ import cc.Spec
 
 class BasicHolder extends Spec {
 
-  "create holder and get the value of a labelled field" in {
-
     case class One(fname: String, lname: String)
-
     case class Holder(one: One) {
 
       import record._
@@ -18,10 +15,13 @@ class BasicHolder extends Spec {
       def apply(fn: Symbol) = er('fname)
     }
 
+  "create holder and get the value of a labelled field" in {
 
     Holder(One("1", "2"))('fname) mustBe 1
 
   }
+
+
 
 
 
