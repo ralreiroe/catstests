@@ -2,10 +2,13 @@ package shapeless
 
 import cc.Spec
 
+/**
+  *   * http://gigiigig.github.io/posts/2015/09/13/aux-pattern.html
+  */
 class AuxTechnique extends Spec {
 
   trait Foo[A] {
-    type B
+    type B            //<=====
     def value: B
   }
 
@@ -19,8 +22,7 @@ class AuxTechnique extends Spec {
     val value = false
   }
 
-  "lll" in {
-
+  "resolve f.B works here" in {
 
     def valueOf[T](f: Foo[T]): f.B = f.value
 
@@ -29,7 +31,7 @@ class AuxTechnique extends Spec {
 
   }
 
-  "kkk" in {
+  "and here" in {
 
     import cats.Monoid
 
@@ -41,7 +43,9 @@ class AuxTechnique extends Spec {
 
   }
 
-  """cannot resolve Monoid[f.B] because it is in the same section as f
+  """but not here
+    |
+    |Scala compiler cannot resolve Monoid[f.B] because it is in the same section as f
     |
     |got the following type error: "illegal dependent method type: parameter may only be referenced in a subsequent parameter section" """.stripMargin in {
 

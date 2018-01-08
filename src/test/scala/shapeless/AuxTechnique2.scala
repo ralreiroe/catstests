@@ -38,7 +38,7 @@ class AuxTechnique2 extends Spec {
 
     def ciao[T, R](t: T)
                   (implicit f: Foo.Aux[T, R],
-                   m: Monoid[R]): R = f.value
+                   m: Monoid[R]): R = f.value           //<====== now we are not resolving f.B but R
     val res = ciao(2)
     println(s"res: ${res}")
 
