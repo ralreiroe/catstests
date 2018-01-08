@@ -23,6 +23,19 @@ class PassHListToFunction extends Spec {
 
 
   }
+  """constrain function to only work on HLists with a "foo" field II""" in {
+
+    import syntax.singleton._
+
+    def fun[L <: HList](xs: L)(implicit sel: ops.record.Selector[L, Witness.`"foo"`.T]) = 41    //<==== using a literal
+
+    fun(("foo" ->> 42) :: HNil) mustBe 41
+    fun(("bar" ->> 'a) :: ("foo" ->> 42) :: HNil) mustBe 41
+    """fun(("foo" ->> 43) :: HNil)""" must compile
+    """fun(("bar" ->> 43) :: HNil)""" mustNot compile
+
+
+  }
 
 
 }
