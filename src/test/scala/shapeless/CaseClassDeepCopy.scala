@@ -23,7 +23,7 @@ class CaseClassDeepCopy extends Spec {
 
     def shallowRec[A](a: A)(implicit gen: LabelledGeneric[A]): gen.Repr = gen.to(a)
 
-    val shallowrec2 = shallowRec(person)
+    val shallowrec2: HList = shallowRec(person)
 
     shallowrec2 mustBe "Jane" :: Address("street address",12345) :: HNil
 
