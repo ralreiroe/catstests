@@ -1,6 +1,7 @@
 package autoconversion
 
-import shapeless.{HList, ::, HNil}
+import shapeless.labelled.FieldType
+import shapeless.{::, HList, HNil}
 
 trait HListCopier[Elements] {
 
@@ -36,13 +37,20 @@ object ConvertUsingHList extends App {
   println(copy)
 
   import shapeless._ ; import syntax.singleton._
-  val book: HList =
+
+  type BookRec =
+    FieldType[Witness.`"author"`.T, String] ::
+      FieldType[Witness.`"title"`.T, String] ::
+      FieldType[Witness.`"id"`.T, Int] ::
+      FieldType[Witness.`"price"`.T, Double] :: HNil
+
+  val book: BookRec =
     ("author" ->> "Benjamin Pierce") ::
       ("title"  ->> "Types and Programming Languages") ::
       ("id"     ->>  262162091) ::
       ("price"  ->>  44.11) ::
       HNil
-  val bookcopy = HListCopy.copyHList(book)
+  val bookcopy: BookRec = HListCopy.copyHList(book)
 
   println(bookcopy)
 
