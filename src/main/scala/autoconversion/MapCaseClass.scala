@@ -12,6 +12,9 @@ trait FieldsSelector[SourceHList, TargetHList] {
 
 object FieldsSelector {
   implicit def hNilFieldsSelector[SourceHList]: FieldsSelector[SourceHList, HNil] =
+
+    //(1) FieldSelector on HList, HNil
+
     new FieldsSelector[SourceHList, HNil] {
       def apply(dontCare: SourceHList): HNil = HNil
     }
@@ -21,6 +24,8 @@ object FieldsSelector {
     restFieldsSelect: FieldsSelector[SourceHList, TargetHListTail],
     select: Selector.Aux[SourceHList, Key, Value] // select the value of type Value labelled with Key from a HList of type Source
   ): FieldsSelector[SourceHList, FieldType[Key, Value] :: TargetHListTail] =
+
+    //(2) FieldSelector on HList, FieldType[Key, Value] :: HList
 
     new FieldsSelector[SourceHList, FieldType[Key, Value] :: TargetHListTail] {
       def apply(source: SourceHList): FieldType[Key, Value] :: TargetHListTail =
@@ -62,6 +67,15 @@ object MapCaseClass extends App {
   //  import MappedToSyntax._
   val res: Class2 = Class1(1, "quux").mappedTo[Class2] // Class2("quux", 1)
   println(res)
+
+
+
+
+
+
+
+
+
 
   case class One2(name: String, less18: Boolean, more18: Boolean, fname: String)
   case class Two2(less18: Boolean, name: String, more18: Boolean)
