@@ -63,4 +63,13 @@ object MapCaseClass extends App {
   val res: Class2 = Class1(1, "quux").mappedTo[Class2] // Class2("quux", 1)
   println(res)
 
+  case class One2(name: String, less18: Boolean, more18: Boolean, fname: String)
+  case class Two2(less18: Boolean, name: String, more18: Boolean)
+
+  val res2: Two2 = One2("quux", false, true, "").mappedTo[Two2]
+  println(res2)
+
+
+
+
 }
