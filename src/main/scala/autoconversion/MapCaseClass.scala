@@ -69,10 +69,10 @@ object MapCaseClass extends App {
   println(res)
 
 
-  case class One2(name: String, less18: Boolean, more18: Boolean, fname: String)
+  case class One2(fname: String, less18: Boolean, more18: Boolean, name: String)
   case class Two2(less18: Boolean, name: String, more18: Boolean)
 
-  val res2: Two2 = One2("quux", false, true, "").mappedTo[Two2]
+  val res2: Two2 = One2("", false, true, "quux").mappedTo[Two2]
   println(res2)
 
 
