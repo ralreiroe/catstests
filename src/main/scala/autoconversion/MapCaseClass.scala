@@ -1,33 +1,29 @@
 package autoconversion
 
 
-import shapeless.{::, HList, HNil, LabelledGeneric}
-import shapeless.labelled.{FieldType}
+import shapeless.LabelledGeneric.Aux
+import shapeless.{::, HList, HNil, LabelledGeneric, Witness, labelled, tag}
+import shapeless.labelled.FieldType
 import shapeless.ops.record.Selector
-
 
 trait ListBuilder[SourceHList, TargetHList] {
   def apply(source: SourceHList): TargetHList
 }
 
 object ListBuilder {
-  implicit def emptyTgtListHeadExtractor[SourceHList] =
+  implicit def empty[FromList] =
 
-    new ListBuilder[SourceHList, HNil] {
-      def apply(notNeeded: SourceHList): HNil = HNil
+    new ListBuilder[FromList, HNil] {
+      def apply(source: FromList): HNil = HNil
     }
 
-  /**
-    */
+  implicit def nonEmpty[TFn, TValueType, FromList <: HList, ToTailList <: HList](
+                                                                              implicit
+                                                                              select: Selector.Aux[FromList, TFn, TValueType],
+                                                                              listBuilder: ListBuilder[FromList, ToTailList]
+                                                                            )
 
-  implicit def nonEmptyTgtListHeadExtractor[TFn, TValueType, FromList <: HList, ToList <: HList](
-                                                                                                  implicit
-                                                                                                  listBuilder: ListBuilder[FromList, ToList]
-                                                                                                  ,
-                                                                                                  select: Selector.Aux[FromList, TFn, TValueType]
-                                                                                                )
-
-  = new ListBuilder[FromList, FieldType[TFn, TValueType] :: ToList] {
+  = new ListBuilder[FromList, FieldType[TFn, TValueType] :: ToTailList] {
 
     def apply(source: FromList) = {
 
@@ -50,7 +46,10 @@ object CaseClassMap {
                                                                ) =
 
     new CaseClassMap[FromType, ToType] {
-      def apply(inst: FromType) = tolgen.from(listBuilder(fromlgen.to(inst)))
+      def apply(inst: FromType) = {
+        val listInst: ToList = listBuilder(fromlgen.to(inst))
+        tolgen.from(listInst)
+      }
     }
 }
 
@@ -60,12 +59,25 @@ object MapCaseClass extends App {
     def mappedTo[To](implicit ccMap: CaseClassMap[From, To]): To = ccMap(inst)
   }
 
-  case class SourceCC(fname: String, less18: Boolean, more18: Boolean, name: String)
+  case class SourceCC(fname: String, less18: Boolean)
+  case class TargetCC(less18: Boolean)
 
-  case class TargetCC(less18: Boolean, name: String, more18: Boolean)
+  type FromList = FieldType[Witness.`'fname`.T, String] :: FieldType[Witness.`'less18`.T, Boolean] :: HNil
+  type ToList = FieldType[Witness.`'less18`.T, Boolean] :: HNil
 
-  val res2: TargetCC = SourceCC("", false, true, "quux").mappedTo[TargetCC]
-  println(res2)
+  private val fromlgen: Aux[SourceCC, FromList] = LabelledGeneric[SourceCC]
+  private val tolgen: Aux[TargetCC, ToList] = LabelledGeneric[TargetCC]
+
+  val targetInst: TargetCC = SourceCC("", false).mappedTo[TargetCC](
+    CaseClassMap.caseClassMap(
+      fromlgen,
+      tolgen,
+      ListBuilder.nonEmpty(
+        Selector[FromList, Witness.`'less18`.T],
+        ListBuilder.empty[FromList]))
+  )
+  println(TargetCC(false))
+
 
 
 }

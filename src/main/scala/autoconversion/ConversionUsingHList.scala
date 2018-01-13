@@ -14,9 +14,9 @@ object HListCopier {
     def apply(elements: HNil): HNil = HNil
   }
 
-  implicit def nonEmptyHListCopier[A, Rest <: HList](implicit restCopier: HListCopier[Rest]): HListCopier[A :: Rest] =
-    new HListCopier[A :: Rest] {
-      def apply(elements: A :: Rest): A :: Rest = elements.head :: restCopier(elements.tail)
+  implicit def nonEmptyHListCopier[A, Tail <: HList](implicit hlistCopier: HListCopier[Tail]) =
+    new HListCopier[A :: Tail] {
+      def apply(elements: A :: Tail): A :: Tail = elements.head :: hlistCopier(elements.tail)
     }
 }
 
@@ -33,9 +33,12 @@ object ConvertUsingHList extends App {
   val copy = HListCopy.copyHList(hlist)
   println(copy)
 
-  val copy2 = HListCopy.copyHList[Int :: String :: HNil](hlist)(
-      HListCopier.nonEmptyHListCopier[Int, String :: HNil](
-        HListCopier.nonEmptyHListCopier[String, HNil](
+
+  //illustration how the compiler insert calls to the implicit defs HListCopier.nonEmptyHListCopier and HListCopier.hNilCopier f
+  // or the implicit arg required by copyHList
+  val copy2 = HListCopy.copyHList(hlist)(
+      HListCopier.nonEmptyHListCopier(
+        HListCopier.nonEmptyHListCopier(
           HListCopier.hNilCopier
       )
     )
@@ -60,6 +63,7 @@ object ConvertUsingHList extends App {
       HNil
   val bookcopy: BookRec = HListCopy.copyHList(book)
 
+  println(book)
   println(bookcopy)
 
 
