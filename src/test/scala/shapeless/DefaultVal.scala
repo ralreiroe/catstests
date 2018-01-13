@@ -5,6 +5,8 @@ import shapeless.labelled.FieldType
 import shapeless.ops.hlist.Selector
 
 /**
+  *
+  * https://stackoverflow.com/questions/38946719/how-do-i-best-construct-a-shapeless-record-with-a-default-value
   */
 class DefaultVal extends Spec {
 
