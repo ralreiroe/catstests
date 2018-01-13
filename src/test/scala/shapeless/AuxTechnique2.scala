@@ -17,7 +17,7 @@ object Foo {
 
   implicit def fi = new Foo[Int] {
     type B = String
-    val value = "Foo"
+    val value = "FooValue"
   }
   implicit def fs = new Foo[String] {
     type B = Boolean
@@ -40,7 +40,7 @@ class AuxTechnique2 extends Spec {
                   (implicit f: Foo.Aux[T, R],
                    m: Monoid[R]): R = f.value           //<====== now we are not resolving f.B but R
     val res = ciao(2)
-    println(s"res: ${res}")
+    res mustBe "FooValue"
 
 
   }
@@ -48,18 +48,20 @@ class AuxTechnique2 extends Spec {
   "real ex" in {
 
     def length[T, R <: HList](t: T)
-                             (implicit g: Generic.Aux[T, R],
-                              l: Length[R]): l.Out = l()
+                             (implicit
+                              g: Generic.Aux[T, R],
+                              l: Length[R]) = l()
 
 
     case class Foo(i: Int, s: String, b: Boolean)
     val foo = Foo(1, "", false)
 
-    val res = length(foo)
-    println(s"res: ${Nat.toInt(res)}")
+    val res = length(foo)       //Succ[Succ[Succ[_0]]]
 
-
+    Nat.toInt(res) mustBe 3
   }
+
+
 
 
 }
