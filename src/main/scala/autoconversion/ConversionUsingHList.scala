@@ -10,11 +10,9 @@ trait HListCopier[Elements] {
 
 object HListCopier {
 
-
   implicit def hNilCopier: HListCopier[HNil] = new HListCopier[HNil] {
     def apply(elements: HNil): HNil = HNil
   }
-
 
   implicit def nonEmptyHListCopier[A, Rest <: HList](implicit restCopier: HListCopier[Rest]): HListCopier[A :: Rest] =
     new HListCopier[A :: Rest] {
@@ -31,10 +29,20 @@ object HListCopy {
 
 object ConvertUsingHList extends App {
 
-  val hlist = 1 :: "quux" :: HNil // Int :: String :: HNil
+  val hlist = 1 :: "quux" :: HNil
   val copy = HListCopy.copyHList(hlist)
-
   println(copy)
+
+  val copy2 = HListCopy.copyHList[Int :: String :: HNil](hlist)(
+      HListCopier.nonEmptyHListCopier[Int, String :: HNil](
+        HListCopier.nonEmptyHListCopier[String, HNil](
+          HListCopier.hNilCopier
+      )
+    )
+  )
+
+  println(copy2)
+
 
   import shapeless._ ; import syntax.singleton._
 
