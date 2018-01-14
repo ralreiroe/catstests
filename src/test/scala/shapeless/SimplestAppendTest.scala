@@ -24,6 +24,17 @@ class SimplestAppendTest extends Spec {
 
     val extended = book + ("inPrint" ->> true)
 
+    val author = "author"
+
+
+    import shapeless._, record._, syntax.singleton._
+
+    val w = Witness("author")
+
+    def fun[L <: HList](xs: L)(implicit sel: ops.record.Selector[L, w.T]) = xs("author")
+
+
+println(fun(book))
 
     println(extended.keys)
     println(extended)
@@ -40,7 +51,7 @@ class SimplestAppendTest extends Spec {
 
   "symbols" in {
 
-    import shapeless._ ; import syntax.singleton._ ; import record._
+    import shapeless._ ; import syntax.singleton._
 
     val book =
       ('author ->> "Benjamin Pierce") ::
@@ -49,8 +60,12 @@ class SimplestAppendTest extends Spec {
         ('price  ->>  44.11) ::
         HNil
 
+    import record._
 
     book('author) mustBe "Benjamin Pierce"
+    val book2 = book.updated('author, "B")
+    book2('author) mustBe "B"
+
 
     val extended = book + ('inPrint ->> true)
 
