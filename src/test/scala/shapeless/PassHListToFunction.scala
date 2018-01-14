@@ -1,6 +1,7 @@
 package shapeless
 
 import cc.Spec
+import shapeless.labelled.KeyTag
 
 
 /**
@@ -33,6 +34,39 @@ class PassHListToFunction extends Spec {
     fun(("bar" ->> 'a) :: ("foo" ->> 42) :: HNil) mustBe 41
     """fun(("foo" ->> 43) :: HNil)""" must compile
     """fun(("bar" ->> 43) :: HNil)""" mustNot compile
+  }
+  """constrain function to only work on HLists with a "foo" field III""" in {
+
+    import syntax.singleton._
+
+    implicit def str2wit(s: String) = Witness(s)
+
+//    implicit val w = "foo"
+
+    def fun[T, L <: HList](xs: L)(s: String)(implicit
+                                w: Witness.Aux[T],
+                               sel: ops.record.Selector[L,T]) = 41
+
+//    fun(("foo" ->> 42) :: HNil)("foo") mustBe 41
+//    fun(("bar" ->> 'a) :: ("foo" ->> 42) :: HNil) mustBe 41
+//    """fun(("foo" ->> 43) :: HNil)""" must compile
+//    """fun(("bar" ->> 43) :: HNil)""" mustNot compile
+  }
+
+
+
+  """constrain function to only work on HLists with only "foo" field II""" in {
+
+//    import syntax.singleton._
+//
+//    val w = Witness("foo")
+//
+//    def fun(l: Int with KeyTag[w.T, Int] :: HNil) = 41
+//
+//    fun(("foo" ->> 42) :: HNil) mustBe 41
+//    fun(("bar" ->> 'a) :: ("foo" ->> 42) :: HNil) mustBe 41
+//    """fun(("foo" ->> 43) :: HNil)""" must compile
+//    """fun(("bar" ->> 43) :: HNil)""" mustNot compile
 
 
   }
