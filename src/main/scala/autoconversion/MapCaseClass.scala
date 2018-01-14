@@ -1,5 +1,5 @@
 package autoconversion
-
+//FOR IMPLICIT METHOD CALL INSERTS, LOOK AT THE *RETURN TYPES* NOTHING ELSE. LINES 29 AND 47
 
 import shapeless.LabelledGeneric.Aux
 import shapeless.{::, HList, HNil, LabelledGeneric, Witness}
