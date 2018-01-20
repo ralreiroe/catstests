@@ -49,15 +49,19 @@ class PolymorphicFunction extends Spec {
     val removeCountryCode: String=>String = str=>str.substring(Math.min(str.size,2),str.size)
     val takeEnd: String=>String = { str => val aftrlastfwslash = ".*/([^/]+)$".r; str match { case aftrlastfwslash(res) => res; case _ => str } }
 
-    val co = ShortCode("42") :: LongCode("GB10098765") :: DomCountryCode("a/b/GB") :: LeiCountryCode("a/b/DE") :: HNil
-
     object transformer extends Poly1 {
       implicit def sc = at[ShortCode](identity)
       implicit def lc = at[LongCode](lc=>LongCode(removeCountryCode(lc.v)))
       implicit def dcc = at[DomCountryCode](cc=>CountryCode(takeEnd(cc.v)))
       implicit def lcc = at[LeiCountryCode](cc=>CountryCode(takeEnd(cc.v)))
+      implicit def cc = at[(DomCountryCode,LeiCountryCode)](t=>transformer(t._1))
     }
-    co.map(transformer) mustBe ShortCode("42") :: LongCode("10098765") :: CountryCode("GB") :: CountryCode("DE") :: HNil
+    val co0 = ShortCode("42") :: LongCode("GB10098765") :: DomCountryCode("a/b/GB") :: HNil
+    co0.map(transformer) mustBe ShortCode("42") :: LongCode("10098765") :: CountryCode("GB") :: HNil
+    val co1 = ShortCode("42") :: LongCode("GB10098765") :: DomCountryCode("a/b/GB") :: LeiCountryCode("a/b/DE") :: HNil
+    co1.map(transformer) mustBe ShortCode("42") :: LongCode("10098765") :: CountryCode("GB") :: CountryCode("DE") :: HNil
+    val co2 = ShortCode("42") :: LongCode("GB10098765") :: (DomCountryCode("a/b/GB"), LeiCountryCode("a/b/DE")) :: HNil
+    co2.map(transformer) mustBe ShortCode("42") :: LongCode("10098765") :: CountryCode("GB") :: HNil
   }
 
 }
