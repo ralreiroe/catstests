@@ -44,5 +44,25 @@ class PolymorphicFunction extends Spec {
     demo.map(show) mustBe "Showing 42" :: "Showing Hello" :: "Showing User(Julien)" :: HNil
   }
 
+  "cesium output" in {
+
+    val removeCountryCode: String=>String = str=>str.substring(Math.min(str.size,2),str.size)
+    val takeEnd: String=>String = { str => val aftrlastfwslash = ".*/([^/]+)$".r; str match { case aftrlastfwslash(res) => res; case _ => str } }
+
+    val co = ShortCode("42") :: LongCode("GB10098765") :: DomCountryCode("a/b/GB") :: LeiCountryCode("a/b/DE") :: HNil
+
+    object transformer extends Poly1 {
+      implicit def sc = at[ShortCode](identity)
+      implicit def lc = at[LongCode](lc=>LongCode(removeCountryCode(lc.v)))
+      implicit def dcc = at[DomCountryCode](cc=>CountryCode(takeEnd(cc.v)))
+      implicit def lcc = at[LeiCountryCode](cc=>CountryCode(takeEnd(cc.v)))
+    }
+    co.map(transformer) mustBe ShortCode("42") :: LongCode("10098765") :: CountryCode("GB") :: CountryCode("DE") :: HNil
+  }
 
 }
+case class ShortCode(v: String) extends AnyVal
+case class LongCode(v: String) extends AnyVal
+case class DomCountryCode(v: String) extends AnyVal
+case class LeiCountryCode(v: String) extends AnyVal
+case class CountryCode(v: String) extends AnyVal
