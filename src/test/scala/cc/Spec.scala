@@ -11,3 +11,4 @@ trait Spec
     with OptionValues
     with AppendedClues
     with ScalaFutures
+    with GivenWhenThen
