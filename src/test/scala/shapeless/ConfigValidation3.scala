@@ -3,6 +3,8 @@ package shapeless
 import cc.Spec
 import com.typesafe.config.{Config, ConfigFactory}
 import cats.data.{NonEmptyList => NEL, Validated}
+import cats.implicits._
+
 
 class ConfigValidation3 extends Spec {
 
@@ -34,13 +36,14 @@ class ConfigValidation3 extends Spec {
   }
   """)
 
-    import cats.syntax.cartesian._
-
-    import cats.implicits._
-
 
     Then("all validations compose to a triple that can be mapped to a case class instance")
-    val res2 = (cfg: Config) => (hasDate(cfg) |@| greater100000(cfg) |@| unchecked(cfg)).map { case (a,b,c) => MyConfig("My config value YYYYMMDD",123456, "anything")}
+
+
+    def res(cfg: Config) = (hasDate(cfg) |@| greater100000(cfg) |@| unchecked(cfg)).map { case (a,b,c) => MyConfig("My config value YYYYMMDD",123456, "anything")}
+
+    res(config1) mustBe Validated.Valid(MyConfig("My config value YYYYMMDD",123456,"anything"))
+
 
     When("I have a bad config")
     val config2 = ConfigFactory.parseString(
@@ -48,14 +51,14 @@ class ConfigValidation3 extends Spec {
   my-config {
     foo = My config value YYYYMMD
     bar = 12345
+    sftphost = anything
   }
   """)
 
-    println(res2(config1))
-    println(res2(config2))
 
+    res(config2)
     Then("the validations fold into a List[ValueError] with at least one element")
-//    buildUnsafe(hasDate,greater100000)(config2) mustBe Left(List(ValueError("filename should contain a date"), ValueError("int must be greater 100000")))
+    res(config2) mustBe Validated.Invalid(NEL.of(ValueError("filename should contain a date"), ValueError("int must be greater 100000")))
 
 
   }

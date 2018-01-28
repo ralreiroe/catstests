@@ -4,8 +4,6 @@ import cc.Spec
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.GivenWhenThen
 
-case class ValueError(reason: String)
-
 class ConfigValidation2 extends Spec with GivenWhenThen {
 
   //https://www.cakesolutions.net/teamblogs/using-shapeless-to-validate-typesafe-configuration-data
