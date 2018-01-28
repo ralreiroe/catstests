@@ -5,6 +5,33 @@ import cats.syntax.CartesianBuilder
 import cc.Spec
 
 /**
+  *
+  * https://stackoverflow.com/questions/19880207/when-and-why-should-one-use-applicative-functors-in-scala
+  *
+  * Writing applicative code allows you to avoid making unnecessary claims about ***dependencies between computations—claims that similar monadic code would commit you to. A sufficiently smart library or compiler could in principle take advantage of this fact.
+
+To make this idea a little more concrete, consider the following monadic code:
+
+case class Foo(s: Symbol, n: Int)
+
+val maybeFoo = for {
+  s <- maybeComputeS(whatever)
+  n <- maybeComputeN(whatever)
+} yield Foo(s, n)
+The for-comprehension desugars to something more or less like the following:
+
+val maybeFoo = maybeComputeS(whatever).flatMap(
+  s => maybeComputeN(whatever).map(n => Foo(s, n))
+)
+We know that maybeComputeN(whatever) does ***not depend on s (assuming these are well-behaved methods that aren't changing some mutable state behind the scenes), but the compiler doesn't—from its perspective it needs to know s before it can start computing n.
+
+The applicative version (using Scalaz) looks like this:
+
+val maybeFoo = (maybeComputeS(whatever) |@| maybeComputeN(whatever))(Foo(_, _))
+Here we're ***explicitly stating that there's no dependency between the two computations
+  *
+  *
+  *
   * Note that Validation[Whatever, _] isn't a monad (for reasons discussed here, for example), but ValidationNel[String, _] is an applicative functor
   *
   *
