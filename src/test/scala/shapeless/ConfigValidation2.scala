@@ -1,9 +1,8 @@
-package catstests
+package shapeless
 
 import cc.Spec
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.GivenWhenThen
-import shapeless.{Generic, HList, HNil}
 
 case class ValueError(reason: String)
 
@@ -35,8 +34,6 @@ class ConfigValidation2 extends Spec with GivenWhenThen {
   }
 
   "config validation of a typesafe config with Shapeless Generic with a case class that cannot be instantiated outside this package" in {
-
-    import shapeless._
 
     Given("an abstract sealed case class representing the config... a sealed abstract case classes has compiler to build case class niceness such as field val's, hash function, equality and unapply - but omits creating any constructors.")
     sealed abstract case class HttpConfig(host: String, port: Int)

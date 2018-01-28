@@ -1,9 +1,8 @@
-package catstests
+package shapeless
 
 import cc.Spec
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.GivenWhenThen
-import shapeless.{Generic, HList, HNil}
 
 case class ValueError(reason: String)
 
