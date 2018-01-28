@@ -4,6 +4,9 @@ import cats.Apply
 import cats.syntax.CartesianBuilder
 import cc.Spec
 
+
+//flatmap: computations are dependent. applicative: they are not
+
 /**
   *
   * https://stackoverflow.com/questions/19880207/when-and-why-should-one-use-applicative-functors-in-scala
