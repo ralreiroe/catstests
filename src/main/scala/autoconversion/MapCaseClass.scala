@@ -7,28 +7,28 @@ import shapeless.labelled.{FieldType, field}
 import shapeless.ops.record.Selector
 
 /**
-  * Typeclass whose instances look for T2's head in T1
+  * Typeclass used to build an instance of H2 from elements of H1
   */
-trait HeadFinder[T1, T2] {
-  def apply(source: T1): T2
+trait HeadFinder[H1, H2] {
+  def apply(source: H1): H2
 }
 
 object HeadFinder {
-  implicit def empty[T1] =
+  implicit def empty[H1] =
 
-    new HeadFinder[T1, HNil] {
-      def apply(source: T1): HNil = HNil
+    new HeadFinder[H1, HNil] {
+      def apply(source: H1): HNil = HNil
     }
 
-  implicit def nonEmpty[T1 <: HList, T2 <: HList, T3, T4](
+  implicit def nonEmpty[H1 <: HList, H2 <: HList, K, V](
                                                            implicit
-                                                           select: Selector.Aux[T1, T3, T4],
-                                                           headFinder: HeadFinder[T1, T2]
+                                                           select: Selector.Aux[H1, K, V],
+                                                           headFinder: HeadFinder[H1, H2]
                                                          )
 
-  = new HeadFinder[T1, FieldType[T3, T4] :: T2] { //<=================================================================
+  = new HeadFinder[H1, FieldType[K, V] :: H2] { //<=================================================================
 
-    def apply(from: T1) = field[T3].apply(select(from)) :: headFinder(from)
+    def apply(from: H1) = field[K].apply(select(from)) :: headFinder(from)
   }
 }
 
@@ -37,16 +37,17 @@ trait CaseClasTransformer[T1, T2] {
 }
 
 object CaseClasTransformer {
-  implicit def transform[T1, T2, T3, T4](
+  implicit def transform[T1, T2, H1, H2](
                                           implicit
-                                          fromlgen: LabelledGeneric.Aux[T1, T3],
-                                          tolgen: LabelledGeneric.Aux[T2, T4],
-                                          headFinder: HeadFinder[T3, T4]
+                                          fromlgen: LabelledGeneric.Aux[T1, H1],
+                                          tolgen: LabelledGeneric.Aux[T2, H2],
+                                          headFinder: HeadFinder[H1, H2]
                                         ) =
 
     new CaseClasTransformer[T1, T2] {
       def apply(inst: T1) = {
-        val listInst: T4 = headFinder(fromlgen.to(inst))
+        val h1: H1 = fromlgen.to(inst)
+        val listInst: H2 = headFinder(h1)
         tolgen.from(listInst)
       }
     }
