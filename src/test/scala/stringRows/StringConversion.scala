@@ -1,7 +1,5 @@
 package stringRows
 
-import shapelesstest.CountryCodeV
-
 import scala.util.Try
 
 /**
