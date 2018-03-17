@@ -1,11 +1,12 @@
-package catstests
+package catstests.monadtransformers
 
-import org.scalatest.{ FlatSpec, Matchers }
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import org.scalatest.concurrent.ScalaFutures
 import cats.data.EitherT
 import cats.instances.future._
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{FlatSpec, Matchers}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class EitherTSpec extends FlatSpec with Matchers with ScalaFutures {
 

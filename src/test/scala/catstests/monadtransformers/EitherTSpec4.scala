@@ -1,4 +1,4 @@
-package catstests
+package catstests.monadtransformers
 
 import cats.data.EitherT
 import cats.instances.future._
@@ -10,6 +10,12 @@ import scala.concurrent.{Await, Future}
 
 
 //http://eed3si9n.com/herding-cats/stacking-future-and-either.html
+
+
+/**
+  * also see OptionT
+  * https://stackoverflow.com/questions/20693666/chaining-scala-try-instances-that-contain-options
+  */
 class EitherTSpec4 extends FlatSpec with Matchers with ScalaFutures {
 
 

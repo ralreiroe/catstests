@@ -1,4 +1,4 @@
-package catstests
+package catstests.monadtransformers
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
@@ -28,8 +28,8 @@ class EitherTSpec3 extends FlatSpec with Matchers with ScalaFutures {
       }
     }
 
-    import UserRepo.followers
     import Error._
+    import UserRepo.followers
 
     def followEachOther(user1: Long, user2: Long): Either[Error, Boolean] =
       for {
