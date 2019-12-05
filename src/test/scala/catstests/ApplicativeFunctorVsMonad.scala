@@ -62,6 +62,8 @@ class ApplicativeFunctorVsMonad extends Spec {
     } yield 1.0 / v
 
 
+    println(inverse("2"))
+
   }
 
   "Options are monads as well as applicative functors" in {
